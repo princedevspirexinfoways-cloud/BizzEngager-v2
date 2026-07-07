@@ -1,0 +1,22 @@
+node_modules/
+dist/
+build/
+coverage/
+.env
+.env.*
+!.env.example
+!.env.prod.example
+*.log
+logs/
+npm-debug.log*
+.DS_Store
+uploads/
+tmp/
+storage/
+.vscode/
+.idea/
+*.local
+
+# Nested app repos are versioned independently
+/frontend/
+/backend/
