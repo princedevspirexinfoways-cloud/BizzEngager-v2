@@ -50,20 +50,26 @@ npm --workspace backend run worker:dev
 
 API base: `http://localhost:4000/api/v1` — health check at `/api/v1/health`.
 
-## Foundation status (this slice: backend core)
+## Status
 
-Implemented:
+Both panels are built end to end — see `docs/ROADMAP.md` for the module-by-module
+map and the short list of what is still open.
 
-- Config + infra: env validation, Sequelize pool, Redis/BullMQ, pino logging, Socket.IO
-- Full Sequelize schema for **both panels** (tenancy, auth, contacts, frames/presets/
-  shapes, channels, campaigns, wallet, logs, platform config)
-- Reusable **cursor/offset pagination** primitive used across every listing
-- **Auth** for Superadmin / Company Admin / Team member: JWT access+refresh, granular
-  per-module permissions, 2FA scaffold (email OTP + TOTP), login logging
-- **Provider adapter** interface + real **Meta WhatsApp Cloud API** adapter, mock
-  SMS/Email behind the same contract
-- **BullMQ** campaign queue + worker with provider rate throttling
-- **Socket.IO** emitters for dashboard/status/notifications, per-company & per-user rooms
-- Seed script + health checks
+- **Superadmin**: dashboard & analytics, companies + tags, channel providers,
+  system/transaction logs with Excel + invoice PDFs, preset authoring in the Frame
+  Editor, platform settings (admins & permissions, versions, notifications, credit
+  rules and conversion rate, custom fields).
+- **Admin**: dashboard, contacts (CSV import/export, tags, custom fields, opt-out),
+  Frame Editor, campaign wizard with test send and scheduling, wallet with Razorpay
+  and invoices, channel integrations, team/roles, API keys & webhooks.
 
-See `docs/` for module-by-module roadmap (derived from the product spec).
+Useful scripts:
+
+```bash
+npm --workspace backend run db:sync      # create/alter tables
+npm --workspace backend run db:seed      # superadmin + demo tenant
+npm --workspace backend run db:reprice   # re-price frames after credit-rule changes
+npm --workspace backend run demo:run     # run the seeded demo campaign end-to-end
+```
+
+See `docs/` for the full status report.

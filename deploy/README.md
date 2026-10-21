@@ -24,6 +24,13 @@ sudo apt update
 sudo apt install -y nginx python3-certbot-nginx
 ```
 
+The backend image build downloads the editor's font catalog from
+`fonts.googleapis.com` / `fonts.gstatic.com` (~17 MB, ~30s). The build **fails**
+if they are unreachable, deliberately: without those fonts every campaign
+creative renders in a fallback typeface instead of the one the frame was
+designed in. Nothing is fetched at runtime — once the image is built, sending
+does not depend on Google at all.
+
 Point DNS **A records** for both subdomains at the VPS IP before requesting certs:
 
 ```
