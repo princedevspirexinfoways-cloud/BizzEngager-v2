@@ -44,6 +44,10 @@ services:
   api:
     build:
       context: ./backend
+      # Build on the host network: the VPS reaches the Debian/npm mirrors
+      # directly, while the build sandbox's bridged network drops connections.
+      network: host
+    image: bizzengager-backend:latest
     container_name: bizzengager-api
     restart: unless-stopped
     env_file: .env.prod
@@ -63,8 +67,9 @@ services:
     networks: [bizz]
 
   worker:
-    build:
-      context: ./backend
+    # Same image as api (built once by the api service).
+    image: bizzengager-backend:latest
+    pull_policy: never
     container_name: bizzengager-worker
     restart: unless-stopped
     command: ["node", "src/queues/worker.js"]
@@ -85,6 +90,7 @@ services:
   frontend:
     build:
       context: ./frontend
+      network: host
       args:
         VITE_API_URL: ${VITE_API_URL:-https://v2.api.bizzengager.com}
     container_name: bizzengager-frontend
