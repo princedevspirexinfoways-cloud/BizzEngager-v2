@@ -120,6 +120,78 @@ starts; items marked **[meeting]** are parked for a discussion, not for coding y
 | J14 | ✅ Add Company autofill + validation | Cause: **browser autofill**, not app state (the form starts empty). Chrome's password manager treats the field before a password box as the username, so it put the superadmin's saved email into Mobile Number and their saved password into Password. Fields now use `autocomplete="off"`, the password `new-password` (plus 1Password/LastPass opt-outs), the form resets every time it opens, and Mobile Number is `type="tel"`. Mobile numbers must be digits with an optional + country code (separators allowed): an email gets "looks like an email address — enter a phone number". Same rule server-side on create/update company, invite, invite sign-up and account settings |
 | J15 | ✅ No horizontal scroll on Companies list | Fits from ~1255px wide with the sidebar open (was 1920px): used credits shown under the balance, date over time, long emails wrap, square icon actions, and the duplicate Add-credits icon removed (the Credits cell's **+ Add** stays, now permission-gated like the icon was). Narrower than that, rows become stacked cards instead of scrolling sideways (new opt-in `stackBelow` on DataTable) |
 
+## K. Client feedback on the October batch (received 2026-10-24)
+
+The client replied to J1–J12 point by point; items 3 and 9 needed no change.
+Numbers below are the client's.
+
+| # | Feedback | What changed |
+|---|----------|--------------|
+| K1 | Photos tab slow on tab switch; add a preview | The side panels now stay mounted once opened (hidden with CSS), so switching back to Photos is instant and nothing re-downloads; tiles that have painted once no longer replay the fade-in. Every tile has a hover **Preview** (magnifier) that opens the full-size image in the app's lightbox — My Uploads and Unsplash |
+| K2 | Report file name not as required | Two causes. The API never exposed `Content-Disposition` through CORS, and in production the frontend (`v2.bizzengager.com`) and API (`v2.api.bizzengager.com`) are different origins — so the browser could not read the name and fell back to `campaign-{id}-campaign-report.xlsx`. Fixed with `exposedHeaders`. The name itself is now exactly the client's sample, `{campaign name}-campaign-report.xlsx`; the date/time stamp moved off the filename (it is on the Campaign Details sheet) |
+| K4 | Superadmin field "for all companies" not visible in company accounts | The field *was* on contacts, in the import and in the editor's field pickers (those read `/available`), but **Contacts → Custom Fields** listed company-made fields only, which is where the client looked. That list now includes the platform-wide fields aimed at the company, badged **Platform** and read-only ("Set by the platform" instead of edit/delete). `GET /admin/custom-fields` returns both with a `readOnly` flag |
+| K5 | Can't drop an image on the canvas or on the Media tab | Image files from the desktop can be dropped **straight onto the canvas**: uploaded to My Uploads, then placed at the drop point (several at once fan out; a single one dropped onto a shape fills it — see K7). The whole Photos panel is a drop zone now, not only the dashed box; both show a drop highlight. Type and 15 MB checks as before |
+| K6 | Preset thumbnails missing; SVG files into the Shape Library; Brand Presets throw a fabric error | **Fabric error:** a brand preset is saved by the superadmin's editor as a whole frame document (`pages` + header/footer), but insert treated it as a bare object list, so every brand preset failed; insert now flattens a document, `{ objects }` or an array, and an empty preset says so instead of erroring. **Thumbnails:** "Save as Preset" never produced one — the selection is now rendered off-screen to a PNG, uploaded and stored as the tile; tiles show the whole graphic (contain, not cover) and the superadmin's preset list gained a thumbnail column. **SVG:** Elements → Shape Library has **Upload SVG files to the library** (several at once; company shapes for a company, the shared library in the superadmin editor), and the superadmin's Upload SVG now refreshes the list instead of asking to reopen the tab |
+| K7 | Replaced photo not shown in the Photos tab; put the photo *in* the shape instead of crop-with-shape | **Live refresh:** Replace image, Fill with photo, canvas drops and the Media Gallery all signal the Photos tab, which refetches at once. **Photo into shape:** with a shape selected, clicking a photo (My Uploads or Unsplash) puts it inside the shape; so does dragging a photo (or a desktop file) and dropping it on a shape; a selected shape also has **Fill with photo** in Properties. The photo is cover-fitted to the shape and clipped by its outline in one step — no crop session — and saves/renders like a cropped photo (verified editor PNG = server PNG). "Crop image into this shape" remains for manual framing |
+| K8 | Editor needs refinement: a Tools section in the side menu; close the side panels | New **Tools** tab (first in the rail): Select, Text, Pen, Brush, Eraser — each named, with a description and its key (V/T/P/B/E) — plus brush colour/size, Find & replace, Crop photo, Map contact fields and an inline shortcuts list. The header lost that run of icons and keeps undo/redo, zoom, grid, margins, guides, header/footer and the actions. Any side panel closes: click its tab again or the × in its corner; the rail shows **Open** while it is closed |
+| K10 | Adding a text field "takes a predefined field" | Text from the Text tab (Heading, Subheading, Body, Text box, Auto-fit, "Add plain text box") now opens straight into editing with the placeholder selected, so the first keystroke replaces it; a box left empty is removed. Nothing is mapped to a contact field unless chosen |
+| K11 | Make a shape empty by default | Every shape from the catalog, the primitives and a closed pen path lands as an outline with no fill. The old violet is kept as `lastFill`, so the Fill colour or "No fill (on)" brings a fill back in one click. A label written on an empty shape uses dark ink (it was always white, which vanished on an empty shape); on a filled shape the ink follows the fill's brightness |
+| K12 | Tool switching not working as expected, mainly with text | The text tool was "sticky": with the Text tab open it stayed armed, so every canvas click made another empty box and an existing text box could not be selected or moved without pressing V. It is **one-shot** now — place a box, type, and the canvas is back on Select; a single click on a text box selects it, a double-click edits. Opening the Text tab no longer arms anything; the tool is armed from the Tools tab, the T key, or the line at the top of the Text tab. Picking a tool while a caret is live closes that edit first |
+
+Verified headlessly (Playwright + Chrome against the dev servers): 36 checks across K1, K4–K8, K10–K12, plus editor-vs-server render parity for an empty shape, a labelled shape and a photo clipped into a circle.
+
+## L. Client change tracker — October 2026 (Google Sheet, 57 rows, received 2026-10-27)
+
+Source: the client's "Change Tracker" sheet. Numbers are the sheet's Change IDs. The filled
+developer columns are in `docs/BizzEngager-Change-Tracker-dev-update.xlsx` (and
+`docs/change-tracker-dev-columns-E-G.tsv` to paste into E:G of the live sheet).
+Rows 5, 7, 9–12, 19–22 were already delivered in batch K (not yet seen by the client — deploy).
+**Deploy note:** run `deploy.sh --sync` — `api_keys.expires_at` is a new column.
+
+| # | Change | What changed |
+|---|--------|--------------|
+| L1/L57 | "Super Admin Panel Is Open in This Browser" page | Removed the cross-tab panel lock (`lib/panelLock.js` gone). Signing into one panel still ends the other's session (tokens cleared + a `be_signin` beacon other tabs hear via `storage`), but a tab in the other panel now just lands on `/login`. The lock had outlived sessionStorage sessions, so the page appeared with nothing open elsewhere |
+| L2 | "Missing access token" rendered inside a page | A 401 with no refresh token (session cleared elsewhere) now clears the slot and redirects to `/login` |
+| L3 | Empty chart grey box on hover | `ChartFrame` is `pointer-events-none` when there is no data (the box was the Recharts tooltip cursor) |
+| L4/L28 | Date filter in download names | `backend/src/utils/filenames.js` (`datedFilename`, `dmyhm`) used by logs/transactions/wallet/invoices-zip/campaign exports; frontend `lib/filenames.js` for the analytics CSV and fallback names. `name-dd-mm-yyyy-to-dd-mm-yyyy`, or `name-all-time-till-<today>` |
+| L8 | Campaign report name | Back to `{campaign name}-dd-mm-yyyy-hh-mm-campaign-report.xlsx` (campaign time zone); recipients CSV also stamped |
+| L6/L50 | Toolbar control heights | SearchInput, ListFilters, CompanyFilter and DateRangePicker trigger are all h-10 |
+| L13/L17 | Browser confirm() dialogs | `components/ConfirmDialog.jsx`: `confirmDialog({ title, message, confirmLabel, danger })` promise + `<ConfirmHost/>` in App. All 17 `confirm()` calls replaced with specific titles/messages; 2FA-disable `prompt()` is a password modal |
+| L14 | Error logs panel on superadmin dashboard | `/superadmin/dashboard` returns `errors: { count, recent[8] }`; panel with link to System Logs |
+| L15 | Permissions "All" column | Superadmin matrix uses a checkbox (was a "set" link) |
+| L18/L46 | Category dropdown scroll | `CreatableSelect` menu is portalled to body with fixed positioning (flip-up, reflow on scroll/resize, Esc closes) |
+| L23 | Rate limit "must be a number" on update | CrudPage/ManageList send `null` for a blank optional number and `Number()` otherwise |
+| L24 | Preset status UI | Labelled Status select (Draft/Published/Archived) in the editor header |
+| L25 | Upload SVG button | Same `Button` as Design Shape, hidden file input |
+| L26 | Preset tile sizes | Fixed `h-24` preview box, image `object-contain` |
+| L27/L33 | Canvas extra scroll | Stage is `overflow-hidden` until page+rulers+padding exceed it (the fabric control-margin ring overhang counted as scrollable area); fit-to-screen subtracts the 22px rulers |
+| L32 | Library filters | Presets: status/categoryId/audience; Shapes: category (new `GET /superadmin/library/shapes/categories`) |
+| L34 | Grid | Drawn on the canvas in `after:render` (page units, major every 5th), spacing select 10–100px; CSS stage grid removed |
+| L36/L37 | Channel provider form | `GET /superadmin/channel-providers/catalog` (`providers/catalog.js`: Meta, BizzRiser, BSP profiles, SMTP, SMS gateways flagged `simulated`). Provider Name is a select; picking one pre-fills base URL + per-adapter endpoint fields (`endpoints` JSON) and rate. CrudPage custom fields get a 4th `setMany` arg |
+| L38 | Sidebar toggle | State in localStorage, tooltips when collapsed, overlay + backdrop below lg |
+| L40 | Login footer | "Contact Support" |
+| L41 | Format painter | One-shot: `armFormatPainter()` copies, next `selection:created/updated` pastes and disarms; `painting` state drives the hint strip and button; Esc disarms |
+| L42/L45 | Version / notification submit | `submitLabel`/`scheduleLabel` on `TargetedListPage`: Launch / Schedule Launch, Send / Schedule |
+| L43 | Add Company | Button + `CreateCompanyModal` removed; Invite Client is primary |
+| L44 | Toast wording | CrudPage/ManageList `itemLabel` (from createLabel) → "Provider saved"; specific messages in Settings, SettingsTabs, IntegrationsTabs |
+| L47 | Notification read not real time | `lib/notifications.js` (window event + BroadcastChannel) links the bell and the page across tabs; optimistic badge update |
+| L48 | Custom canvas size | Toolbar "Custom" + W×H inputs (100–8000); `aspectRatio: 'custom'` with width/height saved; Frames size filter gained Custom |
+| L49 | Add Template manual option | Segmented "Choose from provider / Enter manually" |
+| L51 | Logs tab change | Clears search + date params and remounts the controls (admin + superadmin) |
+| L52 | "member" role label | Role column: real role / "No role"; Access "Custom permissions" |
+| L53/L54 | Team/role forms | Inline required errors; role (and custom member perms) need ≥1 permission; API `roleSchema` refuses empty |
+| L55/L56 | API keys | `expiresAt` column; create accepts `expiresAt`; `resolveApiKey` refuses expired; `POST /:id/revoke` + hard `DELETE /:id`; UI Expires column, expiry picker, Revoke vs Delete |
+
+**Needs client input (sheet rows 16, 29, 30, 31, 35, 39):** production SMTP credentials
+(`SMTP_HOST/PORT/USER/PASS`, `MAIL_FROM`) — every "email not sent" report has that one cause;
+which SMS gateway + account (there is still no live SMS adapter, sending is simulated);
+Razorpay live keys for "set payment gateway".
+
+Verified: API checks (catalog, categories, dashboard errors, export filenames, provider update
+with null/'' rate, role validation, API key create/expiry/revoke/delete) and 29 headless-browser
+checks (Playwright + Chrome) covering L1, L2, L6, L13–L15, L18, L24, L27, L32, L34, L36, L37,
+L41–L43, L45, L48, L50, L53–L56.
+
 ## H. Parked for meeting
 
 | # | Item |

@@ -1,0 +1,57 @@
+Done	Removed the "Super Admin Panel Is Open in This Browser" page entirely. If the other panel is signed in from any tab, this tab simply goes to the login screen - no warning. Pressing Back after a superadmin login shows login, not a popup (#57).	Tested
+Done	When the session/token is gone, the page redirects to the login screen instead of rendering with "Missing access token".	Tested
+Done	Empty charts no longer react to mouse hover (the grey box was the chart tooltip cursor drawn over an empty graph).	Tested
+Done	Company Performance export is now named company-performance-<from>-to-<to>.csv from the selected date filter (dd-mm-yyyy).	Tested
+Done	Already fixed in the previous batch (K6, frontend commit 787eb18): the shape list refreshes itself after upload. Please re-check after the next deployment.	Tested (previous batch)
+Done	Search box and status dropdown in Company Invitations are the same height now (applied to every list toolbar across both panels).	Tested
+Done	Delivered in the previous batch (K1): Photos tab stays mounted (instant tab switch, no re-download) and every tile has a Preview button. Pending deployment check.	Tested (previous batch)
+Done	Report file name is {campaign name}-dd-mm-yyyy-hh-mm-campaign-report.xlsx, time in the campaign's time zone.	Tested
+Done	Delivered in the previous batch (K4): platform-wide custom fields show under Contacts > Custom Fields as read-only 'Platform' fields.	Tested (previous batch)
+Done	Delivered in the previous batch (K5): images can be dropped on the canvas and anywhere on the Photos panel.	Tested (previous batch)
+Done	Delivered in the previous batch (K6): preset thumbnails generated on save; Brand Presets insert without the fabric error.	Tested (previous batch)
+Done	Delivered in the previous batch (K7): Photos tab refreshes live after Replace; a photo dropped/clicked onto a selected shape goes inside the shape.	Tested (previous batch)
+Done	Every browser confirm() replaced with the app's own dialog, each with a specific title and message (delete campaign, archive company, revoke invitation/API key, stop schedule, remove integration/template, deactivate member, delete role/webhook/superadmin/version/notification, CRUD lists). Disable-2FA password prompt is now an in-app dialog too.	Tested
+Done	Superadmin dashboard now has an Error Logs panel: count for the selected period, latest 8 errors with company/source/time, and a View all link to System Logs.	Tested
+Done	Superadmin permission grid: the All column is a checkbox, same as the admin panel's team/role grid.	Tested
+Needs Input	Code path is correct; production has no SMTP settings, so every email (invite, 2FA, reset) falls back to 'could not be sent'. Please share SMTP host/port/user/password and the From address; we set SMTP_HOST/SMTP_PORT/SMTP_USER/SMTP_PASS/MAIL_FROM in backend .env.prod. Same root cause as #31 and #39.	Blocked - needs input
+Done	Archive popup is the in-app dialog ('Archive <company>?' with Archive/Cancel) - see #13.	Tested
+Done	Category dropdown now opens as an overlay above the toolbar; the toolbar strip no longer grows/scrolls when it opens. Esc or clicking outside closes it.	Tested
+Done	Delivered in the previous batch (K8): Tools tab (Select/Text/Pen/Brush/Eraser) in the side menu; header keeps only view controls and actions.	Tested (previous batch)
+Done	Delivered in the previous batch (K8): side panel closes via its x or by clicking the active tab again; an Open button brings it back.	Tested (previous batch)
+Done	Delivered in the previous batch (K12): text tool is one-shot, single click selects text, double-click edits.	Tested (previous batch)
+Done	Delivered in the previous batch (K6): Elements > Shape Library has 'Upload SVG files to the library' (multiple files).	Tested (previous batch)
+Done	A blank rate limit is saved as 'no limit' on update too. Root cause: the form sent an empty string, which the API rejected as 'ratePerSecond must be a number'.	Tested
+Done	Preset status is one labelled dropdown in the editor header: Status - Draft / Published / Archived (colour-coded), replacing the pill + Publish/Archive buttons.	Tested
+Done	Upload SVG and Design Shape are now the same button style.	Tested
+Done	Preset tiles are a fixed height; the preview image fits inside, so old and new presets line up.	Tested
+Done	The canvas area only scrolls when the page is actually bigger than the view (zoomed in). Fit-to-screen also accounts for the rulers, so a fitted page has no scrollbars.	Tested
+Done	Every download name carries the date filter: login/campaign/error logs, transactions (superadmin + wallet), invoices zip, campaign list CSV, recipients CSV, analytics CSV. Format <name>-dd-mm-yyyy-to-dd-mm-yyyy; with no filter: <name>-all-time-till-<today>.	Tested
+Needs Input	Email channel is ready to configure: Channel Config > Email > Add Provider now lists 'SMTP (any mail server)'. Companies then connect with their SMTP details (or the platform SMTP is used). Needs the SMTP credentials from #16 to actually deliver.	Blocked - needs input
+Needs Input	SMS gateways (MSG91, Twilio, Textlocal, Fast2SMS) can be configured in Channel Config, but there is no live SMS adapter yet - sending is simulated (marked in the UI). Please confirm which SMS gateway you use and share the account/API key; then we wire the real adapter.	Blocked - needs input
+Needs Input	Same root cause as #16: production SMTP is not configured. Will work as soon as the SMTP credentials are set.	Blocked - needs input
+Done	Presets list: search + Status / Category / Audience filters. Shape Library: search + Category filter.	Tested
+Done	Same fix as #27.	Tested
+Done	Grid is now drawn on the canvas itself (scales with zoom, lines up with snapping, every 5th line heavier) with a spacing selector (10/20/25/40/50/100 px) next to the grid toggle. The old grid was a fixed screen pattern behind the page.	Tested
+Needs Input	Razorpay checkout is integrated (order + signature verify + webhook). Production needs the live keys: RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, RAZORPAY_WEBHOOK_SECRET in backend .env.prod. Until they are set, Add Credits grants directly (dev mode).	Blocked - needs input
+Done	'Provider Key' replaced by a Provider Name dropdown of the providers the platform supports (per channel), with 'Other...' for a custom key.	Tested
+Done	Choosing a provider pre-fills its Base URL and lists the endpoints it needs (send template, send text, get templates, message status, ...) as editable fields; the View dialog shows them too.	Tested
+Done	Sidebar: open/collapsed state is remembered, collapsed icons show tooltips, clear collapse/expand icon, and on narrow screens the open sidebar overlays the page instead of squeezing it.	Tested
+Needs Input	Same root cause as #16: production SMTP is not configured.	Blocked - needs input
+Done	'Contact Sales' changed to 'Contact Support' on the login / forgot password screen.	Tested
+Done	Format painter works like design tools now: click it with the source element selected, then click the target element - the style is applied automatically. Click again or press Esc to cancel; a hint strip shows while it is armed.	Tested
+Done	Button reads 'Launch' (or 'Schedule Launch' when a later time is picked) instead of Save.	Tested
+Done	Add Company button and form removed from the superadmin Companies page; Invite Client is the primary action.	Tested
+Done	Generic toasts ('Saved', 'Deleted', 'Created', 'Sent') replaced with specific messages everywhere: e.g. 'Provider saved', 'Role "Manager" deleted', 'Version launched and announced', 'API key "Zapier" revoked', 'Account details saved'.	Tested
+Done	Button reads 'Send' (or 'Schedule' when scheduled) instead of Save.	Tested
+Done	All custom dropdowns (tag picker, category picker, date range, notification bell, background picker) close on outside click and Esc; the editor's category dropdown was the one misbehaving (fixed with #18). If you still see one that stays open, tell us which screen.	Tested
+Done	Marking a notification read updates the bell count and the Notifications page immediately, and in every other open tab of the browser.	Tested
+Done	Canvas size dropdown has 'Custom': type width x height (100-8000 px) and press Enter; saved with the frame and shown as Custom when reopened.	Tested
+Done	Add Template now shows a visible switch at the top: 'Choose from provider' / 'Enter manually'.	Tested
+Done	Search box and filters in Activity & Logs are the same height (same fix as #6).	Tested
+Done	Switching a logs tab clears the search/date filters and reloads the records.	Tested
+Done	Team list shows the real role, or 'No role', and Access says 'Custom permissions' - the default 'member' label (which clashed with your own Member role) is gone.	Tested
+Done	Name and Email are marked required (*) and the error appears under the field before anything is submitted.	Tested
+Done	A role must have at least one permission - blocked in the form and by the API.	Tested
+Done	Two separate actions: Revoke (key stops working, stays listed as revoked) and Delete (removes it from the list).	Tested
+Done	Create Key has an Expires option (never / 30 / 90 / 180 days / 1 year / custom date). Expired keys are refused and shown as 'expired' in a new Expires column.	Tested
+Done	See #1: the popup is gone. The superadmin stays signed in; opening an admin URL just shows the login screen.	Tested
